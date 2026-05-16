@@ -1,0 +1,6 @@
+{
+  "name": "Genesis Titan Engine",
+  "description": "High-performance gaming optimization engine with tactical overlay, low-latency touch response, and hardware simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

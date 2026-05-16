@@ -1,0 +1,17 @@
+{
+  "name": "Titan Gaming Engine",
+  "short_name": "Titan Engine",
+  "description": "Unlock maximum performance with the Genesis Titan Kernel optimization suite.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090A0C",
+  "theme_color": "#090A0C",
+  "icons": [
+    {
+      "src": "/titan_engine_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

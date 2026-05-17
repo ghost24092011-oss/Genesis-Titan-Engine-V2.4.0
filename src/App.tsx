@@ -75,6 +75,7 @@ export default function App() {
   const [parallelDraw, setParallelDraw] = useState(false);
   const [touchPrecision, setTouchPrecision] = useState(false);
   const [packetInterleave, setPacketInterleave] = useState(false);
+  const [aimAssistBooster, setAimAssistBooster] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [ramInfo, setRamInfo] = useState({ free: 8.4, total: 12 });
   const [isBooting, setIsBooting] = useState(true);
@@ -85,6 +86,37 @@ export default function App() {
   const [latency, setLatency] = useState(1.2);
   const [ping, setPing] = useState(24);
   const [battery, setBattery] = useState(88);
+  const [cpuInfo, setCpuInfo] = useState("DETECTING...");
+
+  useEffect(() => {
+    const cores = navigator.hardwareConcurrency || 8;
+    const ua = navigator.userAgent;
+    let chip = "UNKNOWN CPU";
+
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      chip = "APPLE SILICON";
+    } else if (/Mac OS X/.test(ua)) {
+      chip = "APPLE M-SERIES / INTEL";
+    } else if (/Android/.test(ua)) {
+      if (/Pixel/.test(ua)) {
+        chip = "GOOGLE TENSOR";
+      } else if (/SM-|Samsung/i.test(ua)) {
+        chip = "EXYNOS / SNAPDRAGON";
+      } else {
+        chip = "ARM SOC";
+      }
+    } else if (/Windows/.test(ua)) {
+      chip = "X86_64";
+    } else if (/Linux/.test(ua)) {
+      chip = "LINUX KERNEL";
+    } else {
+      chip = "GENERIC CPU";
+    }
+    
+    // Try to get more accurate generic names if available in user agent or via other APIs
+    // For now we use the heuristic
+    setCpuInfo(`${chip} / ${cores} CORES`);
+  }, []);
 
   const addLog = useCallback((message: string, type: "success" | "warn" | "error" | "info" = "info") => {
     const newLog: LogEntry = {
@@ -689,6 +721,18 @@ export default function App() {
               </div>
 
               <ControlSwitch 
+                label="AI Aim Assist Booster"
+                description="Aggressive neural aim adjustments with real-time signature masking (Strong + Anti-Ban)."
+                icon={Target}
+                checked={aimAssistBooster}
+                onChange={(v) => {
+                  setAimAssistBooster(v);
+                  addLog(v ? "[ACTIVE] NEURAL_AIM: BOOSTER ENGAGED (ANTI-BAN VERIFIED)." : "AI Aim Assist Booster disabled.", v ? "success" : "warn");
+                }}
+                color="rose"
+              />
+
+              <ControlSwitch 
                 label="Draw Distance Push"
                 description="Force LOD-0 rendering for distant models to eliminate pop-in effects."
                 icon={Monitor}
@@ -787,7 +831,7 @@ export default function App() {
       {/* Bottom Bar: Stats */}
       <footer className="h-10 bg-[#111318] border-t border-[#1F2937] flex items-center px-8 text-[9px] text-[#4B5563] font-bold uppercase tracking-[0.25em] shrink-0">
         <div className="flex-1 flex gap-12">
-          <span className="flex items-center gap-2">CPU: <span className="text-[#D1D5DB]">SD8 GEN 2 / 8 CORES</span></span>
+          <span className="flex items-center gap-2">CPU: <span className="text-[#D1D5DB]">{cpuInfo}</span></span>
           <span className="flex items-center gap-2">CORE TEMP: <span className={temp > 40 ? 'text-rose-500' : 'text-[#D1D5DB]'}>{temp}°C</span></span>
           <span className="flex items-center gap-2">PING: <span className="text-[#D1D5DB]">{ping}ms</span></span>
           <span className="flex items-center gap-2">BATT: <span className={battery < 20 ? 'text-rose-500 animate-pulse' : 'text-[#D1D5DB]'}>{Math.floor(battery)}% / DISCHARGING</span></span>
